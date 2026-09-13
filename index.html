@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>YT Game Wrapper WebGL Template</title>
+    <script
+      async
+      data-ad-client="ca-pub-2368998551715747"
+      data-ad-frequency-hint="30s"
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2368998551715747"
+      crossorigin="anonymous"
+      nonce="Y0kmok0ZGuJ5aGRuDyTxgg"
+    ></script>
+    <script nonce="Y0kmok0ZGuJ5aGRuDyTxgg">
+      window.adsbygoogle = window.adsbygoogle || [];
+      var adBreak = adConfig = function (options) {
+        adsbygoogle.push(options);
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="TemplateData/style.css"
+      nonce="Y0kmok0ZGuJ5aGRuDyTxgg"
+    />
+    <script
+      src="https://www.youtube.com/game_api/v1"
+      nonce="Y0kmok0ZGuJ5aGRuDyTxgg"
+    >
+      // Load YT Game API code
+    </script>
+  </head>
+
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas
+        id="unity-canvas"
+        width="100%"
+        height="100%"
+        tabindex="-1"
+      ></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"></div>
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">Epic Plane</div>
+      </div>
+    </div>
+
+    <script nonce="Y0kmok0ZGuJ5aGRuDyTxgg">
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+        }
+        var div = document.createElement("div");
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == "error") div.style = "background: red; padding: 10px;";
+        else {
+          if (type == "warning") div.style = "background: yellow; padding: 10px;";
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/epic_plane_v1.4.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/epic_plane_v1.4.data.unityweb",
+        frameworkUrl: buildUrl + "/epic_plane_v1.4.framework.js.unityweb",
+        codeUrl: buildUrl + "/epic_plane_v1.4.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Voodoo",
+        productName: "Epic Plane",
+        productVersion: "1.6.3",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.getElementsByTagName("head")[0].appendChild(meta);
+        container.className = "unity-mobile";
+        canvas.className = "unity-mobile";
+      } else {
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+      }
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = function() {
+        createUnityInstance(canvas, config, function(progress) {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then(function(unityInstance) {
+          window.unityGameInstance = unityInstance;
+          loadingBar.style.display = "none";
+          fullscreenButton.onclick = function() {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch(function(message) {
+          unityShowBanner(message, "error");
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
